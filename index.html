@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CriCripto — Token CRIC</title>
+  <style>
+    :root{--bg:#0f1724;--card:#0b1220;--accent:#7dd3fc;--muted:#9ca3af;--glass: rgba(255,255,255,0.03)}
+    body{font-family:Inter,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:linear-gradient(180deg,#071329,#071a2b);color:#e6eef8;margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+    .container{width:100%;max-width:920px;}
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+    h1{margin:0;font-size:20px;letter-spacing:0.4px}
+    .card{background:var(--card);border-radius:12px;padding:18px;box-shadow:0 6px 20px rgba(2,6,23,0.6);margin-bottom:12px}
+    .row{display:flex;gap:12px;flex-wrap:wrap}
+    .col{flex:1;min-width:220px}
+    button{background:var(--accent);border:none;padding:10px 12px;border-radius:8px;color:#062023;font-weight:600;cursor:pointer}
+    button.secondary{background:transparent;color:var(--accent);border:1px solid rgba(125,211,252,0.14)}
+    input,select{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:var(--glass);color:inherit}
+    label{display:block;color:var(--muted);font-size:13px;margin-bottom:6px}
+    .muted{color:var(--muted);font-size:13px}
+    pre{white-space:pre-wrap;word-break:break-word;background:rgba(0,0,0,0.15);padding:10px;border-radius:8px}
+    footer{margin-top:8px;color:var(--muted);font-size:13px;text-align:center}
+    .tiny{font-size:12px;color:var(--muted)}
+  </style>
+  <!-- ethers v5 UMD (for browser) -->
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>CriCripto — CRIC <span class="tiny"> (demo web)</span></h1>
+      <div>
+        <button id="connectBtn">Conectar Carteira</button>
+      </div>
+    </header>
+
+    <!-- Token / network config -->
+    <div class="card">
+      <div class="row">
+        <div class="col">
+          <label>Endereço do contrato (CRIC)</label>
+          <input id="contractAddress" placeholder="0x... (edite conforme seu deploy)" />
+          <div class="muted tiny">Edite o endereço do contrato e clique em <b>Atualizar Info</b>.</div>
+        </div>
+        <div style="width:170px">
+          <label>&nbsp;</label>
+          <button id="refreshBtn">Atualizar Info</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Token info -->
+    <div id="tokenCard" class="card">
+      <div class="row">
+        <div class="col">
+          <label>Nome</label>
+          <div id="tokenName">—</div>
+        </div>
+        <div class="col">
+          <label>Símbolo</label>
+          <div id="tokenSymbol">—</div>
+        </div>
+        <div class="col">
+          <label>Decimais</label>
+          <div id="tokenDecimals">—</div>
+        </div>
+        <div class="col">
+          <label>Total Supply</label>
+          <div id="tokenSupply">—</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- User info & transfer -->
+    <div class="card">
+      <div class="row">
+        <div class="col">
+          <label>Carteira conectada</label>
+          <div id="walletAddress">Não conectada</div>
+          <div class="muted">Saldo CRIC: <span id="myBalance">—</span></div>
+        </div>
+
+        <div class="col">
+          <label>Transferir CRIC</label>
+          <input id="toAddr" placeholder="Endereço do destinatário (0x...)" />
+          <input id="amount" placeholder="Quantidade (ex: 10.5)" style="margin-top:8px"/>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button id="sendBtn">Enviar</button>
+            <button id="clearBtn" class="secondary">Limpar</button>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:12px">
+        <label>Status / Log</label>
+        <pre id="log">Aguardando ações...</pre>
+      </div>
+    </div>
+
+    <footer>
+      Dica: para transferir em testnet, selecione a mesma rede no MetaMask onde o token foi deployado (ex.: Sepolia).
+    </footer>
+  </div>
+
+<script>
+/*
+  Instruções:
+   - Configure contractAddressInput.value para o endereço do seu token CRIC (ERC20).
+   - O site usa MetaMask (window.ethereum) para ações que exigem assinatura (transfer).
+   - Se MetaMask não estiver disponível, o site usa um provedor JSON público para leituras (separado no script).
+*/
+
+// ======== CONFIG PADRÃO - edite se quiser =========
+// Exemplo placeholder: substitua pelo endereço real após deploy
+const DEFAULT_CONTRACT = "PASTE_YOUR_CONTRACT_ADDRESS_HERE";
+// Exemplo RPC público para leitura (Sepolia / ou mainnet). Troque se necessário.
+const FALLBACK_JSON_RPC = "https://rpc.sepolia.org"; // se seu token estiver em Sepolia
+// ===================================================
+
+const ERC20_ABI = [
+  "function name() view returns (string)",
+  "function symbol() view returns (string)",
+  "function decimals() view returns (uint8)",
+  "function totalSupply() view returns (uint256)",
+  "function balanceOf(address) view returns (uint256)",
+  "function transfer(address to, uint256 amount) returns (bool)"
+];
+
+const contractAddressInput = document.getElementById('contractAddress');
+const connectBtn = document.getElementById('connectBtn');
+const refreshBtn = document.getElementById('refreshBtn');
+const tokenNameEl = document.getElementById('tokenName');
+const tokenSymbolEl = document.getElementById('tokenSymbol');
+const tokenDecimalsEl = document.getElementById('tokenDecimals');
+const tokenSupplyEl = document.getElementById('tokenSupply');
+const walletAddressEl = document.getElementById('walletAddress');
+const myBalanceEl = document.getElementById('myBalance');
+const sendBtn = document.getElementById('sendBtn');
+const clearBtn = document.getElementById('clearBtn');
+const toAddrInput = document.getElementById('toAddr');
+const amountInput = document.getElementById('amount');
+const logEl = document.getElementById('log');
+
+let provider = null;     // ethers provider (Web3Provider if MetaMask present)
+let signer = null;
+let userAddress = null;
+let tokenContractRead = null; // contract with read-only provider
+let tokenContractWithSigner = null;
+let tokenDecimals = 18;
+
+// Initialize UI
+contractAddressInput.value = DEFAULT_CONTRACT !== "PASTE_YOUR_CONTRACT_ADDRESS_HERE" ? DEFAULT_CONTRACT : "";
+
+// Utility logging
+function log(msg) {
+  const time = new Date().toLocaleTimeString();
+  logEl.textContent = `[${time}] ${msg}\n` + logEl.textContent;
+}
+
+// Setup provider: prefer injected (MetaMask) for actions, but always set a read provider fallback
+async function setupProviders() {
+  if (window.ethereum) {
+    provider = new ethers.providers.Web3Provider(window.ethereum);
+    try {
+      // Do not request accounts here; request when user clicks connect
+      log("MetaMask detectado (injeção).");
+    } catch (e) {
+      log("Erro inicializando MetaMask: " + e);
+    }
+  } else {
+    log("MetaMask não encontrado. leituras serão feitas via RPC público.");
+  }
+}
+
+// Build read-only contract instance based on chosen RPC
+function buildReadContract(addr) {
+  const rpc = FALLBACK_JSON_RPC;
+  const readProvider = window.ethereum ? new ethers.providers.Web3Provider(window.ethereum) : new ethers.providers.JsonRpcProvider(rpc);
+  tokenContractRead = new ethers.Contract(addr, ERC20_ABI, readProvider);
+}
+
+// Build signer contract (for transfer)
+function buildSignerContract(addr) {
+  if (!provider) {
+    provider = window.ethereum ? new ethers.providers.Web3Provider(window.ethereum) : new ethers.providers.JsonRpcProvider(FALLBACK_JSON_RPC);
+  }
+  signer = provider.getSigner ? provider.getSigner() : null;
+  tokenContractWithSigner = signer ? new ethers.Contract(addr, ERC20_ABI, signer) : null;
+}
+
+// Connect wallet action
+connectBtn.onclick = async () => {
+  if (!window.ethereum) {
+    alert("MetaMask não encontrada. Instale a extensão MetaMask para poder assinar transações.");
+    return;
+  }
+  try {
+    await window.ethereum.request({ method: "eth_requestAccounts" });
+    provider = new ethers.providers.Web3Provider(window.ethereum);
+    signer = provider.getSigner();
+    userAddress = await signer.getAddress();
+    walletAddressEl.textContent = userAddress;
+    log("Carteira conectada: " + userAddress);
+    // rebuild signer contract if contract address present
+    const addr = contractAddressInput.value.trim();
+    if (addr) buildSignerContract(addr);
+    await refreshBalances();
+  } catch (e) {
+    console.error(e);
+    log("Erro ao conectar carteira: " + e.message);
+  }
+};
+
+// Refresh token info and user balance
+refreshBtn.onclick = async () => {
+  const addr = contractAddressInput.value.trim();
+  if (!addr) {
+    alert("Coloque o endereço do contrato CRIC no campo acima.");
+    return;
+  }
+  try {
+    buildReadContract(addr);
+    buildSignerContract(addr);
+    await loadTokenInfo(addr);
+    await refreshBalances();
+    log("Informações atualizadas.");
+  } catch (e) {
+    console.error(e);
+    log("Erro ao atualizar info: " + (e.message || e));
+  }
+};
+
+// Load token data (name, symbol, decimals, totalSupply)
+async function loadTokenInfo(addr) {
+  try {
+    const name = await tokenContractRead.name();
+    const symbol = await tokenContractRead.symbol();
+    const decimals = await tokenContractRead.decimals();
+    const totalSupplyBN = await tokenContractRead.totalSupply();
+    tokenDecimals = Number(decimals);
+    tokenNameEl.textContent = name;
+    tokenSymbolEl.textContent = symbol;
+    tokenDecimalsEl.textContent = decimals;
+    // format supply
+    tokenSupplyEl.textContent = ethers.utils.formatUnits(totalSupplyBN.toString(), tokenDecimals) + " " + symbol;
+    log(`Token: ${name} (${symbol}), decimais ${decimals}`);
+  } catch (e){
+    tokenNameEl.textContent = "—";
+    tokenSymbolEl.textContent = "—";
+    tokenDecimalsEl.textContent = "—";
+    tokenSupplyEl.textContent = "—";
+    throw e;
+  }
+}
+
+// Refresh user balance (if wallet connected) and show
+async function refreshBalances() {
+  try {
+    const addr = contractAddressInput.value.trim();
+    if (!addr) return;
+    if (!tokenContractRead) buildReadContract(addr);
+    if (userAddress) {
+      const bal = await tokenContractRead.balanceOf(userAddress);
+      myBalanceEl.textContent = ethers.utils.formatUnits(bal.toString(), tokenDecimals);
+      walletAddressEl.textContent = userAddress;
+      log("Saldo atualizado: " + myBalanceEl.textContent);
+    } else {
+      myBalanceEl.textContent = "— (conecte carteira para ver saldo)";
+    }
+  } catch (e) {
+    console.error(e);
+    log("Erro obtendo saldo: " + (e.message||e));
+  }
+}
+
+// Send transfer (uses signer)
+sendBtn.onclick = async () => {
+  const to = toAddrInput.value.trim();
+  const amount = amountInput.value.trim();
+  const addr = contractAddressInput.value.trim();
+  if (!to || !amount) { alert("Preencha destinatário e quantidade."); return; }
+  if (!userAddress) { alert("Conecte a carteira antes de enviar."); return; }
+  if (!addr) { alert("Configure o endereço do contrato."); return; }
+
+  try {
+    // ensure contract with signer
+    if (!tokenContractWithSigner) buildSignerContract(addr);
+    // parse amount according to decimals
+    const parsed = ethers.utils.parseUnits(amount, tokenDecimals);
+    log(`Iniciando transferência: ${amount} → ${to}`);
+    const tx = await tokenContractWithSigner.transfer(to, parsed);
+    log("Transação enviada: " + tx.hash);
+    await tx.wait();
+    log("Transação confirmada: " + tx.hash);
+    await refreshBalances();
+  } catch (e) {
+    console.error(e);
+    log("Erro na transferência: " + (e.message || e));
+    alert("Erro na transferência: " + (e.message || e));
+  }
+};
+
+clearBtn.onclick = () => {
+  toAddrInput.value = "";
+  amountInput.value = "";
+};
+
+// auto setup on page load
+(async function init(){
+  await setupProviders();
+  // if DEFAULT_CONTRACT set, prefill
+  if (contractAddressInput.value) {
+    // try to fetch info using fallback provider first
+    try {
+      buildReadContract(contractAddressInput.value.trim());
+      await loadTokenInfo(contractAddressInput.value.trim());
+    } catch(e) {
+      log("Não foi possível carregar token automaticamente: " + (e.message||e));
+    }
+  }
+})();
+</script>
+</body>
+</html>

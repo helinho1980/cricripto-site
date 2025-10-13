@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Cricripto (CRC) — Fair value for IoT & IoE</title>
+  <meta name="description" content="Cricripto (CRC) — moeda digital para mensuração de valor e trocas justas na IoT e IoE. Whitepapers, tokenomics, roadmap e como participar." />
+  <meta name="theme-color" content="#0b63d6" />
+
+  <!-- Favicon simples (emoji) -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔗</text></svg>">
+
+  <!-- Estilos (simples, limpos) -->
+  <style>
+    :root{
+      --bg:#0f1724; --card:#0b1220; --accent:#0b63d6; --muted:#9aa6bf; --glass: rgba(255,255,255,0.03);
+      --maxw:1100px; --radius:12px; --pad:18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
+      background:linear-gradient(180deg,#071126 0%, #071827 100%); color:#e6eef8; -webkit-font-smoothing:antialiased;
+      line-height:1.45;
+    }
+    .wrap{max-width:var(--maxw); margin:32px auto; padding:0 20px;}
+    header{display:flex;align-items:center;justify-content:space-between; gap:16px; margin-bottom:22px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#00b3ff);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:22px;box-shadow:0 6px 18px rgba(11,99,214,0.18)}
+    nav{display:flex;gap:12px;align-items:center}
+    nav a{color:var(--muted); text-decoration:none; padding:8px 10px; border-radius:8px; font-weight:600}
+    nav a:hover{color:#fff; background:var(--glass)}
+    .cta{background:var(--accent); color:#fff; padding:10px 14px; border-radius:10px; text-decoration:none; font-weight:700}
+    main{display:grid; grid-template-columns: 1fr; gap:18px}
+
+    .hero{background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent); padding:28px; border-radius:var(--radius); display:flex; gap:18px; align-items:center}
+    .hero-left{flex:1}
+    .h-title{font-size:28px; margin:0 0 8px}
+    .h-sub{color:var(--muted); margin:0 0 16px}
+    .buttons{display:flex; gap:10px; flex-wrap:wrap}
+    .btn{padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:700}
+    .btn-primary{background:var(--accent); color:#fff}
+    .btn-outline{border:1px solid rgba(255,255,255,0.06); color:var(--muted); background:transparent}
+
+    .cards{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:12px; margin-top:10px}
+    .card{background:rgba(255,255,255,0.02); padding:14px; border-radius:12px; border:1px solid rgba(255,255,255,0.03)}
+    .muted{color:var(--muted); font-size:14px}
+
+    section h2{margin:0 0 10px; font-size:20px}
+    .two-col{display:grid; grid-template-columns:1fr 360px; gap:18px; align-items:start}
+    .box{background:rgba(255,255,255,0.02); padding:16px; border-radius:12px}
+
+    footer{margin-top:28px; color:var(--muted); font-size:13px; text-align:center; padding:20px 0}
+    /* responsive */
+    @media (max-width:880px){
+      .two-col{grid-template-columns:1fr}
+      nav{display:none}
+    }
+    /* small utilities */
+    .tiny{font-size:13px;color:var(--muted)}
+    .monos{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace; font-size:13px; color:#cfe9ff}
+    a.download{display:inline-block;margin-top:8px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo">CRC</div>
+        <div>
+          <div style="font-weight:800">Cricripto <span class="tiny">CRC</span></div>
+          <div class="tiny">Fair value for IoT & IoE</div>
+        </div>
+      </div>
+
+      <nav aria-label="Main navigation">
+        <a href="#about">About</a>
+        <a href="#tokenomics">Tokenomics</a>
+        <a href="#roadmap">Roadmap</a>
+        <a href="#whitepapers">Whitepapers</a>
+        <a href="#team">Team</a>
+      </nav>
+
+      <div style="display:flex;gap:10px;align-items:center">
+        <a class="cta" href="#get-started">Get Started</a>
+      </div>
+    </header>
+
+    <main>
+      <!-- HERO -->
+      <section class="hero" id="home">
+        <div class="hero-left">
+          <h1 class="h-title">Cricripto (CRC) — Value for devices & people</h1>
+          <p class="h-sub">A token designed to measure & reward real contributions in IoT and the Internet of Everything. Fair, transparent, and interoperable.</p>
+          <div class="buttons">
+            <a class="btn btn-primary" href="#whitepapers">Download Whitepapers</a>
+            <a class="btn btn-outline" href="#tokenomics">Tokenomics</a>
+          </div>
+
+          <div class="cards" style="margin-top:14px">
+            <div class="card">
+              <div style="font-weight:700">Proof-of-Value</div>
+              <div class="muted">Hybrid consensus to weight real contributions (energy, social impact, data quality).</div>
+            </div>
+            <div class="card">
+              <div style="font-weight:700">CRIs (Rewards)</div>
+              <div class="muted">Interactions tokenized so devices and people can exchange value automatically.</div>
+            </div>
+            <div class="card">
+              <div style="font-weight:700">DAO Governance</div>
+              <div class="muted">Decisions weighted by contribution & impact.</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="width:320px">
+          <div class="box">
+            <div style="font-weight:700;margin-bottom:8px">Quick facts</div>
+            <div class="tiny">Token: CRC</div>
+            <div class="tiny">Initial supply: 10,000,000,000 CRC</div>
+            <div class="tiny">Distribution: 40% incentives / 25% dev / 20% inclusion / 10% partners / 5% team</div>
+            <a class="download" href="#" onclick="alert('Suba seu whitepaper no servidor e atualize este link')">📄 Whitepapers (PT/EN)</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- ABOUT -->
+      <section id="about" style="margin-top:10px">
+        <h2>About / Sobre</h2>
+        <div class="two-col">
+          <div>
+            <div class="box">
+              <p style="margin-top:0"><strong>Português:</strong> A Cricripto é uma moeda para mensurar e trocar valor em redes conectadas — onde dispositivos também contribuem e são recompensados.</p>
+              <p class="tiny">English: Cricripto is a token to measure and exchange value across connected networks — where devices also contribute and are rewarded.</p>
+
+              <h3 style="margin-top:10px">Use cases</h3>
+              <ul class="tiny">
+                <li>Casa inteligente: ventilador & TV negociam volume/energia.</li>
+                <li>Mobilidade: veículos autônomos negociam passagem.</li>
+                <li>Pets: GPS oferece recompensa (CRIs) por localização.</li>
+                <li>Saúde e indústria: sensores recompensados por dados anônimos.</li>
+              </ul>
+            </div>
+          </div>
+
+          <aside>
+            <div class="box tiny">
+              <div style="font-weight:700">Get involved</div>
+              <div style="margin-top:8px">Join our community channels, test the faucet, and contribute to the GitHub repo.</div>
+              <div style="margin-top:12px"><a href="#" class="btn btn-primary">Join Discord</a></div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- TOKENOMICS -->
+      <section id="tokenomics" style="margin-top:6px">
+        <h2>Tokenomics</h2>
+        <div class="box">
+          <p style="margin:0"><strong>Supply</strong>: 10,000,000,000 CRC (initial)</p>
+          <p class="muted">Emission schedule: controlled inflation to reward ongoing contributions (PoV rewards, community incentives).</p>
+
+          <div style="display:flex;gap:12px;margin-top:12px;flex-wrap:wrap">
+            <div class="card"><strong>40%</strong><div class="tiny">Incentives</div></div>
+            <div class="card"><strong>25%</strong><div class="tiny">Development</div></div>
+            <div class="card"><strong>20%</strong><div class="tiny">Inclusion</div></div>
+            <div class="card"><strong>10%</strong><div class="tiny">Partners</div></div>
+            <div class="card"><strong>5%</strong><div class="tiny">Founders</div></div>
+          </div>
+
+          <p class="muted" style="margin-top:12px">Contract: — (to be deployed). Use upgradeable patterns for long-term governance flexibility.</p>
+        </div>
+      </section>
+
+      <!-- ROADMAP -->
+      <section id="roadmap" style="margin-top:6px">
+        <h2>Roadmap</h2>
+        <div class="box">
+          <ul class="tiny">
+            <li><strong>2025</strong> Foundation — whitepapers, prototype token, website & testnet.</li>
+            <li><strong>2026</strong> Expansion — pilot integrations, cross-chain bridges.</li>
+            <li><strong>2027-28</strong> Adoption — partnerships, listings, DAO activation.</li>
+            <li><strong>2029+</strong> Maturity — global adoption & sustainability programs.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- WHITEPAPERS -->
+      <section id="whitepapers" style="margin-top:6px">
+        <h2>Whitepapers</h2>
+        <div class="box">
+          <p class="muted">Download the technical and popular whitepapers (PT/EN). Upload your PDFs to the server and replace the links below.</p>
+          <ul class="tiny">
+            <li>Whitepaper Técnico — Português & English — <a href="#" onclick="alert('Suba o PDF e cole o link')">Download (placeholder)</a></li>
+            <li>Whitepaper Popular — Português & English — <a href="#" onclick="alert('Suba o PDF e cole o link')">Download (placeholder)</a></li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- TEAM -->
+      <section id="team" style="margin-top:6px">
+        <h2>Team & Contact</h2>
+        <div class="box">
+          <p class="muted">Founders: [Nome do fundador], [Equipe]. Add bios and LinkedIn links here.</p>
+          <p class="muted">Contact: <span class="monos">team@cricripto.org</span></p>
+        </div>
+      </section>
+
+      <!-- GET STARTED -->
+      <section id="get-started" style="margin-top:6px">
+        <h2>Get Started</h2>
+        <div class="box">
+          <ol class="tiny">
+            <li>Join our Discord / Telegram / Twitter.</li>
+            <li>Test the token on testnet (faucet & docs).</li>
+            <li>Contribute to GitHub (smart contract, front-end, docs).</li>
+          </ol>
+          <p class="muted">Developer resources: open-source repo, API docs, contract address after deployment.</p>
+        </div>
+      </section>
+
+    </main>
+
+    <footer>
+      © <span id="year"></span> Cricripto • Built for IoT fairness • <span class="tiny">Not financial advice.</span>
+    </footer>
+  </div>
+
+  <script>
+    document.getElementById('year').innerText = new Date().getFullYear();
+    // Simple hash scroll
+    document.querySelectorAll('a[href^="#"]').forEach(a=>{
+      a.addEventListener('click', e=>{
+        const target = document.querySelector(a.getAttribute('href'));
+        if(target){
+          e.preventDefault();
+          target.scrollIntoView({behavior:'smooth', block:'start'});
+        }
+      })
+    })
+  </script>
+</body>
+</html>
